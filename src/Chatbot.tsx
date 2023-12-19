@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import TypingChatMessage from './components/TypingChatMessage';
 import './Chatbot.css';
+import ChatHeader from './components/ChatHeader';
 
 interface ChatMessage {
   id: number;
@@ -138,6 +139,7 @@ const Chatbot: React.FC = () => {
 
   return (
     <div className="chatbot-container">
+      <ChatHeader />
       <div className="chatbot-messages" ref={chatContainerRef}>
         {messages.map((message) => (
           <div

@@ -1,4 +1,7 @@
 .chatbot-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   max-width: 400px;
   margin: 20px auto;
   border: 1px solid #ccc;
@@ -29,12 +32,16 @@
   background-color: #3498db;
   color: #fff;
   align-self: flex-end;
+  /* text-align: right;
+  padding-right: 20px; */
 }
 
 .bot-message {
   background-color: #ecf0f1;
   color: #2c3e50;
   align-self: flex-start;
+  /* text-align: left;
+  padding-left: 20px; */
 }
 
 /* Animation for speech bubbles */
