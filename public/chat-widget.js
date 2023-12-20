@@ -27,7 +27,7 @@
     chatWindow.style.width = '300px';
     chatWindow.style.height = '400px';
     chatWindow.style.background = 'white';
-    chatWindow.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.2)';
+    chatWindow.style.boxShadow = '0 10px 10px rgba(0, 0, 0, 0.2)';
     chatWindow.style.zIndex = '9999';
   
     // Create an iframe and add it to the chat window

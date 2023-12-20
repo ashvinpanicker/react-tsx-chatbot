@@ -23,8 +23,16 @@
   
   .close-button {
     background-color: transparent;
-    color: #fff;
     border: none;
     cursor: pointer;
+    padding: 8px;
+    color: #fff;
+    outline: none;
     font-size: 16px;
+    transition: color 0.3s, box-shadow 0.3s;
+  }
+  
+  .close-button:hover {
+    color: #333; /* Darker shade on hover */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Circular shadow on hover */
   }

@@ -1,4 +1,6 @@
 import React from "react";
+import { CloseOutlined } from '@ant-design/icons';
+import { Button } from 'antd';
 import "./ChatHeader.css";
 
 const ChatHeader: React.FC = () => {
@@ -7,14 +9,26 @@ const ChatHeader: React.FC = () => {
         if (chatWindow) {
           chatWindow.style.display = 'none';
         }
+        
+        // Notify the parent window that the chat window is closed
+        window.parent.postMessage('closeChatWindow', '*');
     };
     return (
       <div className="chatbot-header">
         <div className="header-content">
           <span className="header-title">Chatbot</span>
-          <button className="close-button" onClick={() => closeChatWindow()}>
+          <Button 
+            type="primary"
+            // danger
+            className="close-button"
+            shape="circle"
+            icon={<CloseOutlined />}
+            size={'small'}
+            onClick={() => closeChatWindow()}
+          />
+          {/* <button className="close-button" >
             X
-          </button>
+          </button> */}
         </div>
       </div>
     );
