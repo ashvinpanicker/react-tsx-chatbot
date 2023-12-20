@@ -158,6 +158,7 @@ const Chatbot: React.FC = () => {
           onChange={handleUserInput}
           onKeyDown={handleKeyDown}
           placeholder="Type your message..."
+          autoFocus 
         />
         <button onClick={handleSendMessage}>Send</button>
       </div>
