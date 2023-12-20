@@ -118,10 +118,10 @@ const Chatbot: React.FC = () => {
       });
 
       if (response.ok) {
-        const data = await response.json();
-        return data.message;
+        const { data } = await response.json();
+        return data.answer;
       } else {
-        console.error('Ask endpoint failed');
+        console.error('Ask endpoint failed', response.json());
         return 'Sorry, I encountered an error.';
       }
     } catch (error) {
