@@ -23,7 +23,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "lint": "eslint .",
+    "lint": "eslint src/**/*.ts --fix",
     "format": "prettier --write ."
   },
   "husky": {
@@ -32,6 +32,14 @@
     }
   },
   "lint-staged": {
+    "*.ts": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.tsx": [
+      "eslint --fix",
+      "prettier --write"
+    ],
     "*.{js,jsx}": [
       "npm run lint",
       "npm run format",
@@ -58,10 +66,8 @@
   },
   "devDependencies": {
     "eslint": "^8.56.0",
-    "eslint-config-react": "^1.1.7",
-    "eslint-plugin-react": "^7.33.2",
-    "husky": "^8.0.3",
-    "lint-staged": "^15.2.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.1.1",
     "prettier": "^3.1.1"
   }
 }
