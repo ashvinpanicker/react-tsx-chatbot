@@ -32,9 +32,12 @@
   
     // Create an iframe and add it to the chat window
     const iframe = document.createElement('iframe');
-    iframe.src = 'https://test-hgqq.onrender.com/';
     iframe.style.width = '100%';
     iframe.style.height = '100%';
+    iframe.onload = function () {
+      iframe.src = 'https://test-hgqq.onrender.com/';
+    };
+    
     chatWindow.appendChild(iframe);
   
     // Append the button and chat window to the document
