@@ -1,38 +1,55 @@
 .chatbot-header {
-    background-color: #3498db;
-    color: #fff;
-    padding: 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  background-color: #3498db;
+  color: #fff;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0px 5px;
+  width: 100%;
+}
+
+.header-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+.close-button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  color: #fff;
+  outline: none;
+  font-size: 16px;
+  transition: color 0.3s, box-shadow 0.3s;
+}
+
+.close-button:hover {
+  color: #333; /* Darker shade on hover */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Circular shadow on hover */
+}
+
+.full-screen-button {
+  display: none; /* Initially hide the full-screen button */
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Media query to show the full-screen button on mobile devices */
+@media only screen and (max-width: 768px) {
+  .full-screen-button {
+    display: block;
   }
-  
-  .header-content {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0px 5px;
-    width: 100%;
-  }
-  
-  .header-title {
-    font-size: 18px;
-    font-weight: bold;
-    margin-right: 10px;
-  }
-  
-  .close-button {
-    background-color: transparent;
-    border: none;
-    cursor: pointer;
-    padding: 8px;
-    color: #fff;
-    outline: none;
-    font-size: 16px;
-    transition: color 0.3s, box-shadow 0.3s;
-  }
-  
-  .close-button:hover {
-    color: #333; /* Darker shade on hover */
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Circular shadow on hover */
-  }
+}
