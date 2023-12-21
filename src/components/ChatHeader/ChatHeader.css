@@ -21,6 +21,11 @@
   margin-right: 10px;
 }
 
+.header-buttons {
+  display: flex;
+  flex-direction: row;
+}
+
 .close-button {
   background-color: transparent;
   border: none;
@@ -41,12 +46,18 @@
 
 .full-screen-button {
   display: none; /* Initially hide the full-screen button */
-  background-color: #4caf50;
+  background-color: transparent;
   color: white;
   border: none;
   padding: 8px 16px;
-  border-radius: 4px;
+  /* border-radius: 4px; */
   cursor: pointer;
+}
+
+.full-screen-button:hover {
+  color: white !important;
+  /* font-size: smaller; */
+  /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); */
 }
 
 /* Media query to show the full-screen button on mobile devices */

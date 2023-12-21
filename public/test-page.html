@@ -413,19 +413,4 @@
     </div>
   </body>
   <script src="https://test-hgqq.onrender.com/chat-widget.js"></script>
-  <script>
-    window.addEventListener('message', function (event) {
-      // Check if the event origin is the expected origin
-      // Add additional security checks if needed
-      if (event.origin === 'https://test-hgqq.onrender.com') {
-        if (event.data === 'closeChatWindow') {
-          // Handle the event to close the chat window in the parent
-          const chatWindow = document.getElementById('chat-window');
-          if (chatWindow) {
-            chatWindow.style.display = 'none';
-          }
-        }
-      }
-    });
-  </script>
 </html>
