@@ -14,15 +14,15 @@ const serverURL = 'https://api.sell247.ai/v2';
 const credentials = {
   username: 'ashvin',
   password: '94531Achu',
-  apiKey: '950148f6-38c0-46cb-b075-afa2c716dc61'
-}
+  apiKey: '950148f6-38c0-46cb-b075-afa2c716dc61',
+};
 
 const Chatbot: React.FC = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputText, setInputText] = useState<string>('');
   const [sessionToken, setSessionToken] = useState<string | null>(null); // Store the session token
   const chatContainerRef = useRef<HTMLDivElement>(null);
-  
+
   useEffect(() => {
     // Call the /login endpoint on initialization
     const login = async () => {
@@ -30,7 +30,7 @@ const Chatbot: React.FC = () => {
         const response = await fetch(`${serverURL}/login`, {
           method: 'POST',
           headers: new Headers({
-            'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`), // Add your username and password
+            Authorization: 'Basic ' + btoa(`${credentials.username}:${credentials.password}`), // Add your username and password
             'Content-Type': 'application/json',
           }),
         });
@@ -38,7 +38,7 @@ const Chatbot: React.FC = () => {
         if (response.ok) {
           const { data } = await response.json();
           // Store the session token
-          console.log(data)
+          console.log(data);
           setSessionToken(data.session_token);
         } else {
           console.error('Login failed');
@@ -82,7 +82,7 @@ const Chatbot: React.FC = () => {
 
   const handleSendMessage = async () => {
     if (inputText.trim() === '') return;
-    let question = inputText;
+    const question = inputText;
     setInputText('');
 
     // Display user message
@@ -97,9 +97,7 @@ const Chatbot: React.FC = () => {
 
     // Remove the typing status widget message and replace it with the response message
     setMessages((prevMessages) => {
-      const updatedMessages = prevMessages.map((msg) =>
-        msg.id === typingMessage.id ? { id: msg.id, text: responseText, isUser: false } : msg
-      );
+      const updatedMessages = prevMessages.map((msg) => (msg.id === typingMessage.id ? { id: msg.id, text: responseText, isUser: false } : msg));
 
       return updatedMessages;
     });
@@ -111,8 +109,8 @@ const Chatbot: React.FC = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${sessionToken}`,
-          'Apikey': credentials.apiKey
+          Authorization: `Bearer ${sessionToken}`,
+          Apikey: credentials.apiKey,
         },
         body: JSON.stringify({ question }),
       });
@@ -152,14 +150,7 @@ const Chatbot: React.FC = () => {
         ))}
       </div>
       <div className="chatbot-input">
-        <input
-          type="text"
-          value={inputText}
-          onChange={handleUserInput}
-          onKeyDown={handleKeyDown}
-          placeholder="Type your message..."
-          autoFocus 
-        />
+        <input type="text" value={inputText} onChange={handleUserInput} onKeyDown={handleKeyDown} placeholder="Type your message..." autoFocus />
         <button onClick={handleSendMessage}>Send</button>
       </div>
     </div>

@@ -29,7 +29,9 @@
   color: #fff;
   outline: none;
   font-size: 16px;
-  transition: color 0.3s, box-shadow 0.3s;
+  transition:
+    color 0.3s,
+    box-shadow 0.3s;
 }
 
 .close-button:hover {

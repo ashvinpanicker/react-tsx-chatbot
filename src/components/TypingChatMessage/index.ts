@@ -1,2 +1,2 @@
-import TypingChatMessage from "./TypingChatMessage";
+import TypingChatMessage from './TypingChatMessage';
 export default TypingChatMessage;
