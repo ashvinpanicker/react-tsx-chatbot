@@ -76,12 +76,10 @@
           // Handle the event to close the chat window in the parent
           chatWindow.style.width = '100%';
           chatWindow.style.height = '100%';
-          chatWindow.style.position = 'absolute';
           chatWindow.style.bottom = '0px';
           chatWindow.style.right = '0px';
         }
         if (event.data === 'windowedChat') {
-          chatWindow.style.position = 'fixed';
           chatWindow.style.bottom = '80px';
           chatWindow.style.right = '20px';
           chatWindow.style.width = '300px';

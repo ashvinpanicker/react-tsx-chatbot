@@ -61,8 +61,8 @@
 }
 
 /* Media query to show the full-screen button on mobile devices */
-@media only screen and (max-width: 768px) {
+/* @media only screen and (max-width: 768px) {
   .full-screen-button {
     display: block;
   }
-}
+} */
