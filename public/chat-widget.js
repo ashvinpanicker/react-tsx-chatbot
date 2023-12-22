@@ -67,8 +67,6 @@
     // Add additional security checks if needed
     if (event.origin === 'https://test-hgqq.onrender.com') {
       const chatWindow = document.getElementById('chat-window');
-      const defaultChatWindowHeight = chatWindow.clientHeight;
-      const defaultChatWindowWidth = chatWindow.clientWidth;
       if (chatWindow) {
         if (event.data === 'closeChatWindow') {
           // Handle the event to close the chat window in the parent
@@ -78,10 +76,16 @@
           // Handle the event to close the chat window in the parent
           chatWindow.style.width = '100%';
           chatWindow.style.height = '100%';
+          chatWindow.style.position = 'absolute';
+          chatWindow.style.bottom = '0px';
+          chatWindow.style.right = '0px';
         }
         if (event.data === 'windowedChat') {
-          chatWindow.style.width = defaultChatWindowWidth;
-          chatWindow.style.height = defaultChatWindowHeight;
+          chatWindow.style.position = 'fixed';
+          chatWindow.style.bottom = '80px';
+          chatWindow.style.right = '20px';
+          chatWindow.style.width = '300px';
+          chatWindow.style.height = '400px';
         }
       }
     }
