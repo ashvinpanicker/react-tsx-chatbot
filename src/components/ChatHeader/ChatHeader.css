@@ -45,24 +45,15 @@
 }
 
 .full-screen-button {
-  display: none; /* Initially hide the full-screen button */
+  display: block;
   background-color: transparent;
   color: white;
   border: none;
   padding: 8px 16px;
-  /* border-radius: 4px; */
   cursor: pointer;
 }
 
 .full-screen-button:hover {
   color: white !important;
-  /* font-size: smaller; */
-  /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); */
+  font-size: large;
 }
-
-/* Media query to show the full-screen button on mobile devices */
-/* @media only screen and (max-width: 768px) {
-  .full-screen-button {
-    display: block;
-  }
-} */
