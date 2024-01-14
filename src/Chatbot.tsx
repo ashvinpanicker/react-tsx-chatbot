@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import TypingChatMessage from './components/TypingChatMessage';
+import credentials from './utils/loadCredentials';
 import './Chatbot.css';
 import ChatHeader from './components/ChatHeader';
 
@@ -9,13 +10,6 @@ interface ChatMessage {
   isUser: boolean;
   isTyping?: boolean;
 }
-
-const serverURL = 'https://api.sell247.ai/v2';
-const credentials = {
-  username: 'ashvin',
-  password: '94531Achu',
-  apiKey: '950148f6-38c0-46cb-b075-afa2c716dc61',
-};
 
 const Chatbot: React.FC = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -27,7 +21,7 @@ const Chatbot: React.FC = () => {
     // Call the /login endpoint on initialization
     const login = async () => {
       try {
-        const response = await fetch(`${serverURL}/login`, {
+        const response = await fetch(`${credentials.serverURL}/login`, {
           method: 'POST',
           headers: new Headers({
             Authorization: 'Basic ' + btoa(`${credentials.username}:${credentials.password}`), // Add your username and password
@@ -105,7 +99,7 @@ const Chatbot: React.FC = () => {
 
   const askEndpoint = async (question: string): Promise<string> => {
     try {
-      const response = await fetch(`${serverURL}/ask`, {
+      const response = await fetch(`${credentials.serverURL}/ask`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
