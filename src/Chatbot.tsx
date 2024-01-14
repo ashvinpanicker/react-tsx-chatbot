@@ -2,12 +2,24 @@ import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import TypingChatMessage from './components/TypingChatMessage';
 import './Chatbot.css';
 import ChatHeader from './components/ChatHeader';
+import { extractTags } from './utils';
 
 interface ChatMessage {
   id: number;
   text?: string;
   isUser: boolean;
   isTyping?: boolean;
+  className?: string;
+}
+
+interface ButtonAction {
+  type: 'openLink';
+  link: string;
+  text: string;
+}
+
+interface ButtonChatMessage extends ChatMessage {
+  action?: ButtonAction;
 }
 
 const serverURL = 'https://api.sell247.ai/v2';
@@ -38,7 +50,7 @@ const Chatbot: React.FC = () => {
         if (response.ok) {
           const { data } = await response.json();
           // Store the session token
-          console.log(data);
+          // console.log(data);
           setSessionToken(data.session_token);
         } else {
           console.error('Login failed');
@@ -89,6 +101,11 @@ const Chatbot: React.FC = () => {
     const userMessage: ChatMessage = { id: messages.length + 1, text: question, isUser: true };
     addMessage(userMessage);
 
+    // TODO remove this temp test stuff
+    if (question.toLowerCase() === 'interested') {
+      promptSiteVisit();
+      return;
+    }
     // Display typing animation
     const typingMessage: ChatMessage = { id: messages.length + 2, isTyping: true, isUser: false };
     addMessage(typingMessage);
@@ -101,6 +118,28 @@ const Chatbot: React.FC = () => {
 
       return updatedMessages;
     });
+  };
+
+  const promptSiteVisit = () => {
+    const siteVisitButton: ButtonChatMessage = {
+      id: messages.length + 1,
+      text: 'Come to our site and take a look for yourself.',
+      isUser: false,
+      className: 'site-visit-button',
+      action: {
+        type: 'openLink',
+        link: 'https://calendly.com/arihanthomes/site-visit',
+        text: 'Book a Site Visit',
+      },
+    };
+
+    addMessage(siteVisitButton);
+  };
+
+  const handleButtonClick = (action: ButtonAction) => {
+    if (action.type === 'openLink') {
+      window.open(action.link, '_blank'); // Open link in a new tab
+    }
   };
 
   const askEndpoint = async (question: string): Promise<string> => {
@@ -117,6 +156,14 @@ const Chatbot: React.FC = () => {
 
       if (response.ok) {
         const { data } = await response.json();
+        const tagsData = extractTags(data.answer_with_tags);
+        console.log('Tags Found: ', tagsData);
+        const interestedTags = tagsData.filter((d) => d.tag == 'interest');
+        if (interestedTags.length > 0) {
+          // Interest Tag found
+          console.log('User is interested in -> ', interestedTags);
+          promptSiteVisit();
+        }
         return data.answer;
       } else {
         console.error('Ask endpoint failed', response.json());
@@ -142,10 +189,10 @@ const Chatbot: React.FC = () => {
         {messages.map((message) => (
           <div
             key={message.id}
-            className={message.isUser ? 'user-message' : 'bot-message'}
+            className={`${message.isUser ? 'user-message' : 'bot-message'}`}
             style={{ animationDelay: message.isTyping ? '0s' : '0.5s' }}
           >
-            {message.isTyping ? <TypingChatMessage /> : message.text}
+            {message.isTyping ? <TypingChatMessage /> : renderMessage(message)}
           </div>
         ))}
       </div>
@@ -155,6 +202,21 @@ const Chatbot: React.FC = () => {
       </div>
     </div>
   );
+
+  function renderMessage(message: ButtonChatMessage): React.ReactNode {
+    if (message.action && message.action.type === 'openLink') {
+      return (
+        <div className={`site-visit-message`} key={message.id}>
+          {message.text}
+          <button className={message.className} onClick={() => handleButtonClick(message.action!)}>
+            {message.action.text}
+          </button>
+        </div>
+      );
+    } else {
+      return message.text;
+    }
+  }
 };
 
 export default Chatbot;
