@@ -42,7 +42,8 @@ const Chatbot: React.FC = () => {
         const response = await fetch(`${serverURL}/login`, {
           method: 'POST',
           headers: new Headers({
-            Authorization: 'Basic ' + btoa(`${credentials.username}:${credentials.password}`), // Add your username and password
+            // Authorization: 'Basic ' + btoa(`${credentials.username}:${credentials.password}`),
+            apikey: credentials.apiKey,
             'Content-Type': 'application/json',
           }),
         });
@@ -156,7 +157,7 @@ const Chatbot: React.FC = () => {
 
       if (response.ok) {
         const { data } = await response.json();
-        const tagsData = extractTags(data.answer_with_tags);
+        const tagsData = extractTags(data.answer);
         console.log('Tags Found: ', tagsData);
         const interestedTags = tagsData.filter((d) => d.tag == 'interest');
         if (interestedTags.length > 0) {
@@ -164,7 +165,7 @@ const Chatbot: React.FC = () => {
           console.log('User is interested in -> ', interestedTags);
           promptSiteVisit();
         }
-        return data.answer;
+        return data.answer_without_tags;
       } else {
         console.error('Ask endpoint failed', response.json());
         return 'Sorry, I encountered an error.';
