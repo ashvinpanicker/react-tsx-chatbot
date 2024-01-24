@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
+import { ApiOutlined } from '@ant-design/icons';
 import TypingChatMessage from './components/TypingChatMessage';
 import './Chatbot.css';
 import ChatHeader from './components/ChatHeader';
@@ -32,11 +33,29 @@ const credentials = {
 const Chatbot: React.FC = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputText, setInputText] = useState<string>('');
+  const [isAPIAlive, setIsAPIAlive] = useState<boolean>(false);
   const [sessionToken, setSessionToken] = useState<string | null>(null); // Store the session token
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Call the /login endpoint on initialization
+    const pingServer = async () => {
+      try {
+        const response = await fetch(`${serverURL}/ping`, {
+          method: 'GET',
+        });
+
+        if (response.ok) {
+          const { data } = await response.json();
+          console.log('Ping response', response, data);
+          setIsAPIAlive(true);
+        } else {
+          console.error('Ping Server failed', response);
+        }
+      } catch (error) {
+        console.error('Error connecting to Server:', error);
+      }
+    };
+
     const login = async () => {
       try {
         const response = await fetch(`${serverURL}/login`, {
@@ -60,8 +79,10 @@ const Chatbot: React.FC = () => {
         console.error('Error:', error);
       }
     };
-
-    login();
+    // Call ping endpoint on initialization
+    pingServer();
+    // Login if /ping was successful
+    if (isAPIAlive) login();
   }, []); // Run once on component mount
 
   useEffect(() => {
@@ -183,27 +204,6 @@ const Chatbot: React.FC = () => {
     }
   };
 
-  return (
-    <div className="chatbot-container">
-      <ChatHeader />
-      <div className="chatbot-messages" ref={chatContainerRef}>
-        {messages.map((message) => (
-          <div
-            key={message.id}
-            className={`${message.isUser ? 'user-message' : 'bot-message'}`}
-            style={{ animationDelay: message.isTyping ? '0s' : '0.5s' }}
-          >
-            {message.isTyping ? <TypingChatMessage /> : renderMessage(message)}
-          </div>
-        ))}
-      </div>
-      <div className="chatbot-input">
-        <input type="text" value={inputText} onChange={handleUserInput} onKeyDown={handleKeyDown} placeholder="Type your message..." autoFocus />
-        <button onClick={handleSendMessage}>Send</button>
-      </div>
-    </div>
-  );
-
   function renderMessage(message: ButtonChatMessage): React.ReactNode {
     if (message.action && message.action.type === 'openLink') {
       return (
@@ -218,6 +218,36 @@ const Chatbot: React.FC = () => {
       return message.text;
     }
   }
+
+  return (
+    <div className="chatbot-container">
+      {isAPIAlive ? (
+        <>
+          <ChatHeader />
+          <div className="chatbot-messages" ref={chatContainerRef}>
+            {messages.map((message) => (
+              <div
+                key={message.id}
+                className={`${message.isUser ? 'user-message' : 'bot-message'}`}
+                style={{ animationDelay: message.isTyping ? '0s' : '0.5s' }}
+              >
+                {message.isTyping ? <TypingChatMessage /> : renderMessage(message)}
+              </div>
+            ))}
+          </div>
+          <div className="chatbot-input">
+            <input type="text" value={inputText} onChange={handleUserInput} onKeyDown={handleKeyDown} placeholder="Type your message..." autoFocus />
+            <button onClick={handleSendMessage}>Send</button>
+          </div>
+        </>
+      ) : (
+        <div className="chatbot-error-container">
+          <ApiOutlined style={{ fontSize: '72px', color: '#444', marginBottom: 40 }} />
+          <p style={{ fontSize: '20px', color: '#444', paddingBottom: 20 }}>Could not establish connection to server</p>
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default Chatbot;

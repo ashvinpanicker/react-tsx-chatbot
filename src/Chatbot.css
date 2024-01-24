@@ -70,7 +70,6 @@ video {
   padding: 0;
   border: 0;
   font-size: 100%;
-  font: inherit;
   vertical-align: baseline;
 }
 
@@ -82,6 +81,19 @@ video {
   display: flex;
   flex-direction: column;
   height: 100vh; /* Set height to 100% of the viewport height */
+}
+
+.chatbot-error-container {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  background: #dedede;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  text-align: center;
+  vertical-align: middle;
 }
 
 .chatbot-header {
