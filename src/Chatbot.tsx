@@ -48,6 +48,7 @@ const Chatbot: React.FC = () => {
           const { data } = await response.json();
           console.log('Ping response', response, data);
           setIsAPIAlive(true);
+          login();
         } else {
           console.error('Ping Server failed', response);
         }
@@ -81,8 +82,6 @@ const Chatbot: React.FC = () => {
     };
     // Call ping endpoint on initialization
     pingServer();
-    // Login if /ping was successful
-    if (isAPIAlive) login();
   }, []); // Run once on component mount
 
   useEffect(() => {
