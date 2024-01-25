@@ -70,8 +70,8 @@ const Chatbot: React.FC = () => {
 
         if (response.ok) {
           const { data } = await response.json();
+          console.log(data);
           // Store the session token
-          // console.log(data);
           setSessionToken(data.session_token);
         } else {
           console.error('Login failed');
@@ -163,7 +163,7 @@ const Chatbot: React.FC = () => {
     }
   };
 
-  const askEndpoint = async (question: string): Promise<string> => {
+  const askEndpoint = async (question: string): Promise<any> => {
     try {
       const response = await fetch(`${serverURL}/ask`, {
         method: 'POST',
@@ -175,24 +175,28 @@ const Chatbot: React.FC = () => {
         body: JSON.stringify({ question }),
       });
 
-      if (response.ok) {
-        const { data } = await response.json();
-        const tagsData = extractTags(data.answer);
-        console.log('Tags Found: ', tagsData);
-        const interestedTags = tagsData.filter((d) => d.tag == 'interest');
-        if (interestedTags.length > 0) {
-          // Interest Tag found
-          console.log('User is interested in -> ', interestedTags);
-          promptSiteVisit();
+      if (response) {
+        const jsonResponse = await response.json();
+        if (response.ok) {
+          // HTTP 200
+          const tagsData = extractTags(jsonResponse.data.answer);
+          console.log('Tags Found: ', tagsData);
+          const interestedTags = tagsData.filter((d) => d.tag == 'interest');
+          if (interestedTags.length > 0) {
+            // Interest Tag found
+            console.log('User is interested in -> ', interestedTags);
+            promptSiteVisit();
+          }
+          return jsonResponse.data.answer_without_tags;
+        } else {
+          console.error('Ask endpoint failed', jsonResponse);
+          return jsonResponse.message;
         }
-        return data.answer_without_tags;
-      } else {
-        console.error('Ask endpoint failed', response.json());
-        return 'Sorry, I encountered an error.';
       }
     } catch (error) {
       console.error('Error:', error);
-      return 'Sorry, I encountered an error.';
+      return `Error: ${error}`;
+      // return 'Sorry, I encountered an unexpected error.';
     }
   };
 
