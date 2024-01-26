@@ -3,7 +3,7 @@ import { ApiOutlined } from '@ant-design/icons';
 import TypingChatMessage from './components/TypingChatMessage';
 import './Chatbot.css';
 import ChatHeader from './components/ChatHeader';
-import { extractTags } from './utils';
+import { extractTags, credentials } from './utils';
 
 interface ChatMessage {
   id: number;
@@ -23,13 +23,6 @@ interface ButtonChatMessage extends ChatMessage {
   action?: ButtonAction;
 }
 
-const serverURL = 'https://api.sell247.ai/v2';
-const credentials = {
-  username: 'ashvin',
-  password: '94531Achu',
-  apiKey: '950148f6-38c0-46cb-b075-afa2c716dc61',
-};
-
 const calendlyPropertyOrder = ['Vipassana', 'Tiara', 'Vilaya', 'Vanya Vilas'];
 
 const Chatbot: React.FC = () => {
@@ -43,7 +36,7 @@ const Chatbot: React.FC = () => {
   useEffect(() => {
     const pingServer = async () => {
       try {
-        const response = await fetch(`${serverURL}/ping`, {
+        const response = await fetch(`${credentials.serverURL}/ping`, {
           method: 'GET',
         });
 
@@ -62,7 +55,7 @@ const Chatbot: React.FC = () => {
 
     const login = async () => {
       try {
-        const response = await fetch(`${serverURL}/login`, {
+        const response = await fetch(`${credentials.serverURL}/login`, {
           method: 'POST',
           headers: new Headers({
             // Authorization: 'Basic ' + btoa(`${credentials.username}:${credentials.password}`),
@@ -166,7 +159,7 @@ const Chatbot: React.FC = () => {
 
   const askEndpoint = async (question: string): Promise<any> => {
     try {
-      const response = await fetch(`${serverURL}/ask`, {
+      const response = await fetch(`${credentials.serverURL}/ask`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -204,7 +197,7 @@ const Chatbot: React.FC = () => {
 
   const logoutEndpoint = async () => {
     try {
-      const response = await fetch(`${serverURL}/logout`, {
+      const response = await fetch(`${credentials.serverURL}/logout`, {
         method: 'POST',
         headers: new Headers({
           Authorization: 'Basic ' + btoa(`${credentials.username}:${credentials.password}`),
