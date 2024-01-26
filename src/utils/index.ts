@@ -1,4 +1,4 @@
-import loadCredentials from './loadCredentials';
+import credentials from './loadCredentials';
 import extractTags from './extractTags';
 
-export { extractTags, loadCredentials };
+export { extractTags, credentials };

@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { ApiOutlined } from '@ant-design/icons';
 import TypingChatMessage from './components/TypingChatMessage';
-import credentials from './utils/loadCredentials';
 import './Chatbot.css';
 import ChatHeader from './components/ChatHeader';
-import { extractTags } from './utils';
+import { extractTags, credentials } from './utils';
 
 interface ChatMessage {
   id: number;
@@ -198,7 +197,7 @@ const Chatbot: React.FC = () => {
 
   const logoutEndpoint = async () => {
     try {
-      const response = await fetch(`${credentials.credentials.serverURL}/logout`, {
+      const response = await fetch(`${credentials.serverURL}/logout`, {
         method: 'POST',
         headers: new Headers({
           Authorization: 'Basic ' + btoa(`${credentials.username}:${credentials.password}`),

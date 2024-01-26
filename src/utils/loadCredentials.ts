@@ -6,10 +6,10 @@ interface Credentials {
 }
 
 const credentials: Credentials = {
-  serverURL: process.env.API_SERVER_URL!,
-  username: process.env.API_USERNAME!,
-  password: process.env.API_PASSWORD!,
-  apiKey: process.env.API_KEY!,
+  serverURL: process.env.REACT_APP_SERVER_URL!,
+  username: process.env.REACT_APP_USERNAME!,
+  password: process.env.REACT_APP_PASSWORD!,
+  apiKey: process.env.REACT_APP_KEY!,
 };
 
 export default credentials;
