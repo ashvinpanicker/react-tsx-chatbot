@@ -36,7 +36,8 @@ const Chatbot: React.FC = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputText, setInputText] = useState<string>('');
   const [isAPIAlive, setIsAPIAlive] = useState<boolean>(false);
-  const [sessionToken, setSessionToken] = useState<string | null>(null); // Store the session token
+  const [sessionToken, setSessionToken] = useState<string | null>(null);
+  const [idleTimeoutSeconds, setIdleTimeoutSeconds] = useState<number>(0);
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -75,6 +76,7 @@ const Chatbot: React.FC = () => {
           // console.log(data);
           // Store the session token
           setSessionToken(data.session_token);
+          setIdleTimeoutSeconds(10);
         } else {
           console.error('Login failed');
         }
@@ -116,7 +118,7 @@ const Chatbot: React.FC = () => {
   };
 
   const handleSendMessage = async () => {
-    if (inputText.trim() === '') return;
+    if (inputText.trim() === '' || !sessionToken) return;
     const question = inputText;
     setInputText('');
 
@@ -200,6 +202,87 @@ const Chatbot: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+    let timeoutId: number | undefined;
+
+    const resetTimeout = () => {
+      clearTimeout(timeoutId);
+      timeoutId = window.setTimeout(logout, idleTimeoutSeconds * 1000);
+    };
+
+    const logout = () => {
+      console.log('Logging out...');
+      const timeoutMessage: ChatMessage = {
+        id: messages.length + 1,
+        text: 'You were timed out due to inactivity. Please refresh the page to restart the chat',
+        isUser: false,
+      };
+      addMessage(timeoutMessage);
+      setSessionToken(null);
+      removeActivityEventListeners();
+      logoutEndpoint(); // Close session on idle timeout
+
+      // TODO Add reload window functionality for the iframe
+    };
+
+    const handleActivity = () => {
+      resetTimeout();
+    };
+
+    // const handleInactivity = () => {
+    //   setIsActive(false);
+    // };
+
+    const removeActivityEventListeners = () => {
+      window.removeEventListener('mousemove', handleActivity);
+      window.removeEventListener('keydown', handleActivity);
+      window.removeEventListener('scroll', handleActivity);
+    };
+
+    // Set up initial timeout
+    resetTimeout();
+
+    // Add event listeners for user activity
+    window.addEventListener('mousemove', handleActivity);
+    window.addEventListener('keydown', handleActivity);
+    window.addEventListener('scroll', handleActivity);
+
+    // Add event listener for user inactivity
+    // window.addEventListener('blur', handleInactivity);
+
+    // Clean up event listeners on component unmount
+    return () => {
+      clearTimeout(timeoutId);
+      removeActivityEventListeners();
+      // window.removeEventListener('blur', handleInactivity);
+    };
+  }, [idleTimeoutSeconds]);
+
+  const logoutEndpoint = async () => {
+    try {
+      const response = await fetch(`${serverURL}/logout`, {
+        method: 'POST',
+        headers: new Headers({
+          Authorization: 'Basic ' + btoa(`${credentials.username}:${credentials.password}`),
+          apikey: credentials.apiKey,
+          'Content-Type': 'application/json',
+        }),
+      });
+
+      if (response.ok) {
+        const jsonResponse = await response.json();
+        // console.log(data);
+        // Store the session token
+        return jsonResponse.message;
+      } else {
+        console.error('Logout failed');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      return `Error while logging out: ${error}`;
+    }
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault();
@@ -240,7 +323,9 @@ const Chatbot: React.FC = () => {
           </div>
           <div className="chatbot-input">
             <input type="text" value={inputText} onChange={handleUserInput} onKeyDown={handleKeyDown} placeholder="Type your message..." autoFocus />
-            <button onClick={handleSendMessage}>Send</button>
+            <button disabled={!sessionToken} style={sessionToken ? {} : { cursor: 'not-allowed', background: 'gray' }} onClick={handleSendMessage}>
+              Send
+            </button>
           </div>
         </>
       ) : (
