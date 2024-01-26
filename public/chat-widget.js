@@ -1,5 +1,5 @@
 (function () {
-  const iframeURL = 'https://test-hgqq.onrender.com/';
+  const iframeURL = 'https://test-hgqq.onrender.com';
   // Create the floating action button
   const floatingButton = document.createElement('div');
   floatingButton.id = 'floating-button';
@@ -18,7 +18,7 @@
 
    // Create an image element and set its source to your icon.svg
    const iconImage = document.createElement('img');
-   iconImage.src = `${iframeURL}noun-speech-bubble-180773.svg`;
+   iconImage.src = `${iframeURL}/noun-speech-bubble-180773.svg`;
    iconImage.alt = 'Chat Icon';
    iconImage.style.width = '80%';
    iconImage.style.height = '100%';
