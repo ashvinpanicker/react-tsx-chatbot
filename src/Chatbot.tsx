@@ -1,39 +1,76 @@
 import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
+import { ApiOutlined } from '@ant-design/icons';
 import TypingChatMessage from './components/TypingChatMessage';
 import credentials from './utils/loadCredentials';
 import './Chatbot.css';
 import ChatHeader from './components/ChatHeader';
+import { extractTags } from './utils';
 
 interface ChatMessage {
   id: number;
   text?: string;
   isUser: boolean;
   isTyping?: boolean;
+  className?: string;
 }
+
+interface ButtonAction {
+  type: 'openLink';
+  link: string;
+  text: string;
+}
+
+interface ButtonChatMessage extends ChatMessage {
+  action?: ButtonAction;
+}
+
+const calendlyPropertyOrder = ['Vipassana', 'Tiara', 'Vilaya', 'Vanya Vilas'];
 
 const Chatbot: React.FC = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputText, setInputText] = useState<string>('');
-  const [sessionToken, setSessionToken] = useState<string | null>(null); // Store the session token
+  const [isAPIAlive, setIsAPIAlive] = useState<boolean>(false);
+  const [sessionToken, setSessionToken] = useState<string | null>(null);
+  const [idleTimeoutSeconds, setIdleTimeoutSeconds] = useState<number>(0);
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Call the /login endpoint on initialization
+    const pingServer = async () => {
+      try {
+        const response = await fetch(`${credentials.serverURL}/ping`, {
+          method: 'GET',
+        });
+
+        if (response.ok) {
+          // const { data } = await response.json();
+          // console.log('Ping response', response, data);
+          setIsAPIAlive(true);
+          login();
+        } else {
+          console.error('Ping Server failed', response);
+        }
+      } catch (error) {
+        console.error('Error connecting to Server:', error);
+      }
+    };
+
     const login = async () => {
       try {
         const response = await fetch(`${credentials.serverURL}/login`, {
           method: 'POST',
           headers: new Headers({
-            Authorization: 'Basic ' + btoa(`${credentials.username}:${credentials.password}`), // Add your username and password
+            // Authorization: 'Basic ' + btoa(`${credentials.username}:${credentials.password}`),
+            apikey: credentials.apiKey,
             'Content-Type': 'application/json',
           }),
         });
 
         if (response.ok) {
           const { data } = await response.json();
+          // console.log(data);
           // Store the session token
-          console.log(data);
           setSessionToken(data.session_token);
+          setIdleTimeoutSeconds(data.idle_timeout_seconds);
         } else {
           console.error('Login failed');
         }
@@ -41,8 +78,8 @@ const Chatbot: React.FC = () => {
         console.error('Error:', error);
       }
     };
-
-    login();
+    // Call ping endpoint on initialization
+    pingServer();
   }, []); // Run once on component mount
 
   useEffect(() => {
@@ -75,7 +112,7 @@ const Chatbot: React.FC = () => {
   };
 
   const handleSendMessage = async () => {
-    if (inputText.trim() === '') return;
+    if (inputText.trim() === '' || !sessionToken) return;
     const question = inputText;
     setInputText('');
 
@@ -97,7 +134,31 @@ const Chatbot: React.FC = () => {
     });
   };
 
-  const askEndpoint = async (question: string): Promise<string> => {
+  const promptSiteVisit = (interestedProperty: string) => {
+    // To prefill calendly page with interested property
+    const a2 = calendlyPropertyOrder.indexOf(interestedProperty) + 1;
+    const siteVisitButton: ButtonChatMessage = {
+      id: messages.length + 1,
+      text: `Experience the magic on our site at ${interestedProperty} - your gateway to a world of possibilities awaits. Come and explore for yourself!`,
+      isUser: false,
+      className: 'site-visit-button',
+      action: {
+        type: 'openLink',
+        link: `https://calendly.com/arihanthomes/site-visit?a2=${a2}`,
+        text: 'Book a Site Visit',
+      },
+    };
+
+    addMessage(siteVisitButton);
+  };
+
+  const handleButtonClick = (action: ButtonAction) => {
+    if (action.type === 'openLink') {
+      window.open(action.link, '_blank'); // Open link in a new tab
+    }
+  };
+
+  const askEndpoint = async (question: string): Promise<any> => {
     try {
       const response = await fetch(`${credentials.serverURL}/ask`, {
         method: 'POST',
@@ -109,18 +170,112 @@ const Chatbot: React.FC = () => {
         body: JSON.stringify({ question }),
       });
 
-      if (response.ok) {
-        const { data } = await response.json();
-        return data.answer;
-      } else {
-        console.error('Ask endpoint failed', response.json());
-        return 'Sorry, I encountered an error.';
+      if (response) {
+        const jsonResponse = await response.json();
+        // HTTP 200
+        if (response.ok) {
+          // Check answer for tags
+          const tagsData = extractTags(jsonResponse.data.answer);
+          console.log('Tags Found: ', tagsData);
+          const interestedTags = tagsData.filter((d) => d.tag == 'interest');
+          if (interestedTags.length > 0) {
+            // Interest Tag found
+            console.log('User is interested in -> ', interestedTags);
+            promptSiteVisit(interestedTags[0].content);
+          }
+          return jsonResponse.data.answer_without_tags;
+        } else {
+          console.error('Ask endpoint failed', jsonResponse);
+          return jsonResponse.message;
+        }
       }
     } catch (error) {
       console.error('Error:', error);
-      return 'Sorry, I encountered an error.';
+      return `Error: ${error}`;
+      // return 'Sorry, I encountered an unexpected error.';
     }
   };
+
+  const logoutEndpoint = async () => {
+    try {
+      const response = await fetch(`${credentials.credentials.serverURL}/logout`, {
+        method: 'POST',
+        headers: new Headers({
+          Authorization: 'Basic ' + btoa(`${credentials.username}:${credentials.password}`),
+          apikey: credentials.apiKey,
+          'Content-Type': 'application/json',
+        }),
+      });
+
+      if (response.ok) {
+        const jsonResponse = await response.json();
+        // console.log(data);
+        // Store the session token
+        return jsonResponse.message;
+      } else {
+        console.error('Logout failed');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      return `Error while logging out: ${error}`;
+    }
+  };
+
+  useEffect(() => {
+    let timeoutId: number | undefined;
+
+    const resetTimeout = () => {
+      clearTimeout(timeoutId);
+      if (idleTimeoutSeconds > 0) timeoutId = window.setTimeout(logout, idleTimeoutSeconds * 1000);
+    };
+
+    const logout = () => {
+      console.log('Logging out...');
+      const timeoutMessage: ChatMessage = {
+        id: messages.length + 1,
+        text: 'You were timed out due to inactivity. Please refresh the page to restart the chat',
+        isUser: false,
+      };
+      addMessage(timeoutMessage);
+      setSessionToken(null);
+      removeActivityEventListeners();
+      logoutEndpoint(); // Close session on idle timeout
+
+      // TODO Add reload window functionality for the iframe
+    };
+
+    const handleActivity = () => {
+      resetTimeout();
+    };
+
+    // const handleInactivity = () => {
+    //   setIsActive(false);
+    // };
+
+    const removeActivityEventListeners = () => {
+      window.removeEventListener('mousemove', handleActivity);
+      window.removeEventListener('keydown', handleActivity);
+      window.removeEventListener('scroll', handleActivity);
+    };
+
+    // Set up initial timeout
+    resetTimeout();
+
+    // Add event listeners for user activity
+    window.addEventListener('mousemove', handleActivity);
+    window.addEventListener('keydown', handleActivity);
+    window.addEventListener('scroll', handleActivity);
+
+    // Add event listener for user inactivity
+    // window.addEventListener('blur', handleInactivity);
+
+    // Clean up event listeners on component unmount
+    return () => {
+      clearTimeout(timeoutId);
+      removeActivityEventListeners();
+      // window.removeEventListener('blur', handleInactivity);
+    };
+  }, [idleTimeoutSeconds]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
@@ -129,24 +284,50 @@ const Chatbot: React.FC = () => {
     }
   };
 
+  function renderMessage(message: ButtonChatMessage): React.ReactNode {
+    if (message.action && message.action.type === 'openLink') {
+      return (
+        <div className={`site-visit-message`} key={message.id}>
+          {message.text}
+          <button className={message.className} onClick={() => handleButtonClick(message.action!)}>
+            {message.action.text}
+          </button>
+        </div>
+      );
+    } else {
+      return message.text;
+    }
+  }
+
   return (
     <div className="chatbot-container">
-      <ChatHeader />
-      <div className="chatbot-messages" ref={chatContainerRef}>
-        {messages.map((message) => (
-          <div
-            key={message.id}
-            className={message.isUser ? 'user-message' : 'bot-message'}
-            style={{ animationDelay: message.isTyping ? '0s' : '0.5s' }}
-          >
-            {message.isTyping ? <TypingChatMessage /> : message.text}
+      {isAPIAlive ? (
+        <>
+          <ChatHeader />
+          <div className="chatbot-messages" ref={chatContainerRef}>
+            {messages.map((message, index) => (
+              <div
+                key={`${message.id}_${index}`}
+                className={`${message.isUser ? 'user-message' : 'bot-message'}`}
+                style={{ animationDelay: message.isTyping ? '0s' : '0.5s' }}
+              >
+                {message.isTyping ? <TypingChatMessage /> : renderMessage(message)}
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
-      <div className="chatbot-input">
-        <input type="text" value={inputText} onChange={handleUserInput} onKeyDown={handleKeyDown} placeholder="Type your message..." autoFocus />
-        <button onClick={handleSendMessage}>Send</button>
-      </div>
+          <div className="chatbot-input">
+            <input type="text" value={inputText} onChange={handleUserInput} onKeyDown={handleKeyDown} placeholder="Type your message..." autoFocus />
+            <button disabled={!sessionToken} style={sessionToken ? {} : { cursor: 'not-allowed', background: 'gray' }} onClick={handleSendMessage}>
+              Send
+            </button>
+          </div>
+        </>
+      ) : (
+        <div className="chatbot-error-container">
+          <ApiOutlined style={{ fontSize: '72px', color: '#444', marginBottom: 40 }} />
+          <p style={{ fontSize: '20px', color: '#444', paddingBottom: 20 }}>Could not establish connection to server</p>
+        </div>
+      )}
     </div>
   );
 };
