@@ -30,6 +30,8 @@ const credentials = {
   apiKey: '950148f6-38c0-46cb-b075-afa2c716dc61',
 };
 
+const calendlyPropertyOrder = ['Vipassana', 'Tiara', 'Vilaya', 'Vanya Vilas'];
+
 const Chatbot: React.FC = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputText, setInputText] = useState<string>('');
@@ -45,8 +47,8 @@ const Chatbot: React.FC = () => {
         });
 
         if (response.ok) {
-          const { data } = await response.json();
-          console.log('Ping response', response, data);
+          // const { data } = await response.json();
+          // console.log('Ping response', response, data);
           setIsAPIAlive(true);
           login();
         } else {
@@ -70,7 +72,7 @@ const Chatbot: React.FC = () => {
 
         if (response.ok) {
           const { data } = await response.json();
-          console.log(data);
+          // console.log(data);
           // Store the session token
           setSessionToken(data.session_token);
         } else {
@@ -122,11 +124,6 @@ const Chatbot: React.FC = () => {
     const userMessage: ChatMessage = { id: messages.length + 1, text: question, isUser: true };
     addMessage(userMessage);
 
-    // TODO remove this temp test stuff
-    if (question.toLowerCase() === 'interested') {
-      promptSiteVisit();
-      return;
-    }
     // Display typing animation
     const typingMessage: ChatMessage = { id: messages.length + 2, isTyping: true, isUser: false };
     addMessage(typingMessage);
@@ -141,15 +138,17 @@ const Chatbot: React.FC = () => {
     });
   };
 
-  const promptSiteVisit = () => {
+  const promptSiteVisit = (interestedProperty: string) => {
+    // To prefill calendly page with interested property
+    const a2 = calendlyPropertyOrder.indexOf(interestedProperty) + 1;
     const siteVisitButton: ButtonChatMessage = {
       id: messages.length + 1,
-      text: 'Come to our site and take a look for yourself.',
+      text: `Experience the magic on our site at ${interestedProperty} - your gateway to a world of possibilities awaits. Come and explore for yourself!`,
       isUser: false,
       className: 'site-visit-button',
       action: {
         type: 'openLink',
-        link: 'https://calendly.com/arihanthomes/site-visit',
+        link: `https://calendly.com/arihanthomes/site-visit?a2=${a2}`,
         text: 'Book a Site Visit',
       },
     };
@@ -177,15 +176,16 @@ const Chatbot: React.FC = () => {
 
       if (response) {
         const jsonResponse = await response.json();
+        // HTTP 200
         if (response.ok) {
-          // HTTP 200
+          // Check answer for tags
           const tagsData = extractTags(jsonResponse.data.answer);
           console.log('Tags Found: ', tagsData);
           const interestedTags = tagsData.filter((d) => d.tag == 'interest');
           if (interestedTags.length > 0) {
             // Interest Tag found
             console.log('User is interested in -> ', interestedTags);
-            promptSiteVisit();
+            promptSiteVisit(interestedTags[0].content);
           }
           return jsonResponse.data.answer_without_tags;
         } else {
@@ -228,9 +228,9 @@ const Chatbot: React.FC = () => {
         <>
           <ChatHeader />
           <div className="chatbot-messages" ref={chatContainerRef}>
-            {messages.map((message) => (
+            {messages.map((message, index) => (
               <div
-                key={message.id}
+                key={`${message.id}_${index}`}
                 className={`${message.isUser ? 'user-message' : 'bot-message'}`}
                 style={{ animationDelay: message.isTyping ? '0s' : '0.5s' }}
               >
