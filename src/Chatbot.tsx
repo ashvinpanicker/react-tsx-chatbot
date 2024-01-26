@@ -202,12 +202,37 @@ const Chatbot: React.FC = () => {
     }
   };
 
+  const logoutEndpoint = async () => {
+    try {
+      const response = await fetch(`${serverURL}/logout`, {
+        method: 'POST',
+        headers: new Headers({
+          Authorization: 'Basic ' + btoa(`${credentials.username}:${credentials.password}`),
+          apikey: credentials.apiKey,
+          'Content-Type': 'application/json',
+        }),
+      });
+
+      if (response.ok) {
+        const jsonResponse = await response.json();
+        // console.log(data);
+        // Store the session token
+        return jsonResponse.message;
+      } else {
+        console.error('Logout failed');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      return `Error while logging out: ${error}`;
+    }
+  };
+
   useEffect(() => {
     let timeoutId: number | undefined;
 
     const resetTimeout = () => {
       clearTimeout(timeoutId);
-      timeoutId = window.setTimeout(logout, idleTimeoutSeconds * 1000);
+      if (idleTimeoutSeconds > 0) timeoutId = window.setTimeout(logout, idleTimeoutSeconds * 1000);
     };
 
     const logout = () => {
@@ -257,31 +282,6 @@ const Chatbot: React.FC = () => {
       // window.removeEventListener('blur', handleInactivity);
     };
   }, [idleTimeoutSeconds]);
-
-  const logoutEndpoint = async () => {
-    try {
-      const response = await fetch(`${serverURL}/logout`, {
-        method: 'POST',
-        headers: new Headers({
-          Authorization: 'Basic ' + btoa(`${credentials.username}:${credentials.password}`),
-          apikey: credentials.apiKey,
-          'Content-Type': 'application/json',
-        }),
-      });
-
-      if (response.ok) {
-        const jsonResponse = await response.json();
-        // console.log(data);
-        // Store the session token
-        return jsonResponse.message;
-      } else {
-        console.error('Logout failed');
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      return `Error while logging out: ${error}`;
-    }
-  };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
