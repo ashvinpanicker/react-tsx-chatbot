@@ -83,7 +83,7 @@ video {
   height: 100vh; /* Set height to 100% of the viewport height */
 }
 
-.chatbot-error-container {
+.chatbot-status-container {
   display: flex;
   height: 100%;
   width: 100%;
@@ -94,6 +94,13 @@ video {
   align-content: center;
   text-align: center;
   vertical-align: middle;
+}
+
+.chatbot-status-message {
+  width: 90%;
+  font-size: 16px;
+  color: #444;
+  padding-bottom: 20px;
 }
 
 .chatbot-header {

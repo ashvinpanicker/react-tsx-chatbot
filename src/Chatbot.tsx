@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
-import { ApiOutlined } from '@ant-design/icons';
+import { ApiOutlined, LoadingOutlined } from '@ant-design/icons';
 import TypingChatMessage from './components/TypingChatMessage';
 import './Chatbot.css';
 import ChatHeader from './components/ChatHeader';
@@ -28,12 +28,14 @@ const calendlyPropertyOrder = ['Vipassana', 'Tiara', 'Vilaya', 'Vanya Vilas'];
 const Chatbot: React.FC = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputText, setInputText] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isAPIAlive, setIsAPIAlive] = useState<boolean>(false);
   const [sessionToken, setSessionToken] = useState<string | null>(null);
   const [idleTimeoutSeconds, setIdleTimeoutSeconds] = useState<number>(0);
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    setIsLoading(true);
     const pingServer = async () => {
       try {
         const response = await fetch(`${credentials.serverURL}/ping`, {
@@ -47,6 +49,7 @@ const Chatbot: React.FC = () => {
           login();
         } else {
           console.error('Ping Server failed', response);
+          setIsLoading(false);
         }
       } catch (error) {
         console.error('Error connecting to Server:', error);
@@ -70,6 +73,7 @@ const Chatbot: React.FC = () => {
           // Store the session token
           setSessionToken(data.session_token);
           setIdleTimeoutSeconds(data.idle_timeout_seconds);
+          setIsLoading(false);
         } else {
           console.error('Login failed');
         }
@@ -300,7 +304,7 @@ const Chatbot: React.FC = () => {
 
   return (
     <div className="chatbot-container">
-      {isAPIAlive ? (
+      {isAPIAlive && !isLoading ? (
         <>
           <ChatHeader />
           <div className="chatbot-messages" ref={chatContainerRef}>
@@ -321,10 +325,15 @@ const Chatbot: React.FC = () => {
             </button>
           </div>
         </>
+      ) : isLoading ? (
+        <div className="chatbot-status-container">
+          <LoadingOutlined style={{ fontSize: '72px', color: '#444', marginBottom: 40 }} />
+          <p className="chatbot-status-message">Connecting to server...</p>
+        </div>
       ) : (
-        <div className="chatbot-error-container">
+        <div className="chatbot-status-container">
           <ApiOutlined style={{ fontSize: '72px', color: '#444', marginBottom: 40 }} />
-          <p style={{ fontSize: '20px', color: '#444', paddingBottom: 20 }}>Could not establish connection to server</p>
+          <p className="chatbot-status-message">Could not establish connection to server</p>
         </div>
       )}
     </div>
