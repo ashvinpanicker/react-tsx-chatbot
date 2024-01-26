@@ -1,4 +1,5 @@
 (function () {
+  const iframeURL = 'https://test-hgqq.onrender.com/';
   // Create the floating action button
   const floatingButton = document.createElement('div');
   floatingButton.id = 'floating-button';
@@ -17,7 +18,7 @@
 
    // Create an image element and set its source to your icon.svg
    const iconImage = document.createElement('img');
-   iconImage.src = './noun-speech-bubble-180773.svg';
+   iconImage.src = `${iframeURL}noun-speech-bubble-180773.svg`;
    iconImage.alt = 'Chat Icon';
    iconImage.style.width = '80%';
    iconImage.style.height = '100%';
@@ -45,23 +46,26 @@
   chatWindow.id = 'chat-window';
   chatWindow.style.display = 'block';
   chatWindow.style.position = 'fixed';
-  chatWindow.style.bottom = '90px';
+  chatWindow.style.bottom = '85px';
   chatWindow.style.right = '20px';
   chatWindow.style.width = '330px';
   chatWindow.style.height = '450px';
   chatWindow.style.background = 'white';
-  chatWindow.style.boxShadow = 'rgba(0, 0, 0, 0.16) 0px 5px 40px';
+  chatWindow.style.boxShadow = 'rgba(0, 0, 0, 0.16) -5px 5px 5px';
   chatWindow.style.transition = 'transform 300ms cubic-bezier(0, 1.2, 1, 1) 0s, opacity 12ms ease-out 0s';
-  chatWindow.style.borderRadius = '10px';
+  chatWindow.style.border = '1px solid #f0f0f0';
+  chatWindow.style.borderRadius = '5px';
+  chatWindow.style.overflow = 'hidden';
   chatWindow.style.zIndex = '9999';
   chatWindow.style.transform = 'scale(0) translateY(100%) translateX(100%)';
 
   // Create an iframe and add it to the chat window
   const iframe = document.createElement('iframe');
-  iframe.src = 'https://test-hgqq.onrender.com/';
+  iframe.src = iframeURL;
   iframe.style.width = '100%';
   iframe.style.height = '100%';
   iframe.style.border = '0px none transparent';
+  iframe.style.borderRadius = '5px';
   chatWindow.appendChild(iframe);
 
   // Append the button and chat window to the document
@@ -83,7 +87,7 @@
   window.addEventListener('message', function (event) {
     // Check if the event origin is the expected origin
     // Add additional security checks if needed
-    if (event.origin === 'https://test-hgqq.onrender.com') {
+    if (event.origin === iframeURL) {
       const chatWindow = document.getElementById('chat-window');
       if (chatWindow) {
         if (event.data === 'closeChatWindow') {
