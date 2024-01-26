@@ -76,7 +76,7 @@ const Chatbot: React.FC = () => {
           // console.log(data);
           // Store the session token
           setSessionToken(data.session_token);
-          setIdleTimeoutSeconds(10);
+          setIdleTimeoutSeconds(data.idle_timeout_seconds);
         } else {
           console.error('Login failed');
         }
