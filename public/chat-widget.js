@@ -1,29 +1,103 @@
 (function () {
   const iframeURL = 'https://test-hgqq.onrender.com';
 
+  const styleElement = document.createElement('style');
+  styleElement.textContent = `
+    #floating-button-247 {
+      position: fixed;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      bottom: 25px;
+      right: 25px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 60px;
+      background-color: white;
+      cursor: pointer;
+      z-index: 9999999;
+    }
+
+    /* Right triangle placed top right flush. */
+    .tri-right.border.right-bottom:before {
+      content: ' ';
+      position: absolute;
+      width: 0;
+      height: 0;
+      left: auto;
+      right: -40px;
+      top: -8px;
+      bottom: auto;
+      border: 32px solid;
+      border-color: #666 transparent transparent transparent;
+    }
+    .tri-right.right-bottom:after {
+      content: ' ';
+      position: absolute;
+      width: 0;
+      height: 0;
+      left: auto;
+      right: 5px;
+      top: auto;
+      bottom: -20px;
+      border: 20px solid;
+      border-color: white transparent transparent transparent;
+      transform: rotate(45deg);
+    }
+
+    .dots-container {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      padding-left: 15px;
+      border-radius: 5px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      background-color: #BEC0E6;
+      border-radius: 50%;
+      margin-right: 5px;
+    }
+
+    .unreadBadge {
+      position: absolute;
+      top: -3px;
+      right: -1px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #FF719F;
+    }
+  `;
+
+  document.head.appendChild(styleElement);
+
   // Create the floating action button
   const floatingButton = document.createElement('div');
-  floatingButton.id = 'floating-button';
-  floatingButton.style.position = 'fixed';
-  floatingButton.style.bottom = '20px';
-  floatingButton.style.right = '20px';
-  floatingButton.style.width = '60px';
-  floatingButton.style.height = '60px';
-  floatingButton.style.borderRadius = '50%';
-  floatingButton.style.background = 'rgb(37, 211, 102)';
-  floatingButton.style.color = 'white';
-  floatingButton.style.textAlign = 'center';
-  floatingButton.style.lineHeight = '60px';
-  floatingButton.style.cursor = 'pointer';
+  floatingButton.id = 'floating-button-247';
+  floatingButton.classList.add('tri-right', 'right-bottom');
 
-  const iconImage = document.createElement('img');
-  iconImage.src = `${iframeURL}/noun-speech-bubble-180773.svg`;
-  iconImage.alt = 'Chat Icon';
-  iconImage.style.width = '80%';
-  iconImage.style.height = '100%';
+  // Add styles for the dots container
+  const dotsContainer = document.createElement('div');
+  dotsContainer.className = 'dots-container';
 
-  // Append the image to the floating button
-  floatingButton.appendChild(iconImage);
+  // Add styles for the dots
+  for (let i = 0; i < 3; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'dot';
+    dotsContainer.appendChild(dot);
+  }
+
+  const badge = document.createElement('div');
+  badge.className = 'unreadBadge';
+
+  // Append the dots to the floating button
+  floatingButton.appendChild(dotsContainer);
+  floatingButton.appendChild(badge);
 
   // Add hover effect styles
   floatingButton.style.transition = 'transform 250ms cubic-bezier(0.33, 0, 0, 1) 0s';
