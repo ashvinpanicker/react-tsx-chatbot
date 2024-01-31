@@ -130,11 +130,11 @@
   chatWindow.style.border = '1px solid #f0f0f0';
   chatWindow.style.borderRadius = '5px';
   chatWindow.style.overflow = 'hidden';
-  chatWindow.style.zIndex = '9999';
+  chatWindow.style.zIndex = '99999999';
   chatWindow.style.transform = 'scale(0) translateY(100%) translateX(100%)';
 
   const setChatWindowSize = () => {
-    chatWindow.style.bottom = '85px';
+    chatWindow.style.bottom = '90px';
     chatWindow.style.right = '20px';
     chatWindow.style.width = '330px';
     chatWindow.style.height = '450px';
