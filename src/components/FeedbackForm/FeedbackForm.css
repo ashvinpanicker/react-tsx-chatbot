@@ -1,0 +1,14 @@
+.ant-drawer-content-wrapper {
+  height: 200px !important;
+}
+
+.feedback-form-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.thanks-para {
+  margin-top: 10px;
+  font-size: 24px;
+}

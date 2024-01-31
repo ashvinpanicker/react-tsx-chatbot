@@ -35,7 +35,7 @@
   floatingButton.addEventListener('mouseleave', () => {
     floatingButton.style.transform = 'scale(1)';
   });
-  
+
   // Add a click event handler to the button to toggle the chat window
   floatingButton.addEventListener('click', () => {
     if (chatWindow.style.transform === 'scale(0) translateY(100%) translateX(100%)') {
@@ -58,7 +58,7 @@
   chatWindow.style.overflow = 'hidden';
   chatWindow.style.zIndex = '9999';
   chatWindow.style.transform = 'scale(0) translateY(100%) translateX(100%)';
-  
+
   const setChatWindowSize = () => {
     chatWindow.style.bottom = '85px';
     chatWindow.style.right = '20px';

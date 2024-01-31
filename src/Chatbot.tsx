@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { ApiOutlined, LoadingOutlined } from '@ant-design/icons';
 import TypingChatMessage from './components/TypingChatMessage';
-import './Chatbot.css';
 import ChatHeader from './components/ChatHeader';
+import FeedbackForm from './components/FeedbackForm';
 import { extractTags, credentials } from './utils';
+import './Chatbot.css';
 
 interface ChatMessage {
   id: number;
@@ -23,6 +24,7 @@ interface ButtonChatMessage extends ChatMessage {
   action?: ButtonAction;
 }
 
+// TODO get from backend
 const calendlyPropertyOrder = ['Vipassana', 'Tiara', 'Vilaya', 'Vanya Vilas'];
 
 const Chatbot: React.FC = () => {
@@ -33,6 +35,7 @@ const Chatbot: React.FC = () => {
   const [sessionToken, setSessionToken] = useState<string | null>(null);
   const [idleTimeoutSeconds, setIdleTimeoutSeconds] = useState<number>(0);
   const chatContainerRef = useRef<HTMLDivElement>(null);
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   useEffect(() => {
     setIsLoading(true);
@@ -236,12 +239,13 @@ const Chatbot: React.FC = () => {
       console.log('Logging out...');
       const timeoutMessage: ChatMessage = {
         id: messages.length + 1,
-        text: 'You were timed out due to inactivity. Please refresh the page to restart the chat',
+        text: 'You were timed out due to inactivity.',
         isUser: false,
       };
       addMessage(timeoutMessage);
       setSessionToken(null);
       removeActivityEventListeners();
+      setIsModalVisible(true);
       logoutEndpoint(); // Close session on idle timeout
 
       // TODO Add reload window functionality for the iframe
@@ -324,6 +328,7 @@ const Chatbot: React.FC = () => {
               Send
             </button>
           </div>
+          <FeedbackForm isModalOpen={isModalVisible} setIsModalOpen={setIsModalVisible} />
         </>
       ) : isLoading ? (
         <div className="chatbot-status-container">
