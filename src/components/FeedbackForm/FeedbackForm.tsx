@@ -7,14 +7,15 @@ import './FeedbackForm.css';
 interface FeedbackFormProps {
   isModalOpen: boolean;
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  resetChat: () => void;
 }
 
-const FeedbackForm: React.FC<FeedbackFormProps> = ({ isModalOpen, setIsModalOpen }) => {
+const FeedbackForm: React.FC<FeedbackFormProps> = ({ isModalOpen, setIsModalOpen, resetChat }) => {
   const [rating, setRating] = useState(0);
 
   const desc = ['Terrible', 'Bad', 'Average', 'Good', 'Wonderful'];
   const handleSaveRating = (value: number) => {
-    if (value >= 0) {
+    if (value > 0) {
       // TODO: send rating to API
       console.log(`You rated: ${value} stars`);
       setRating(value);
@@ -24,16 +25,17 @@ const FeedbackForm: React.FC<FeedbackFormProps> = ({ isModalOpen, setIsModalOpen
   };
 
   const closeFeedbackForm = () => {
-    console.log('close form');
     setIsModalOpen(false);
-    // reset the chat
+    resetChat();
   };
 
   // Auto close modal after rating
   useEffect(() => {
-    if (rating >= 0) {
+    if (rating > 0) {
       const timer = setTimeout(() => {
         setIsModalOpen(false);
+        setRating(0);
+        resetChat();
       }, 2500);
 
       return () => clearTimeout(timer);
@@ -48,10 +50,9 @@ const FeedbackForm: React.FC<FeedbackFormProps> = ({ isModalOpen, setIsModalOpen
       onClose={closeFeedbackForm}
       open={isModalOpen}
       maskClosable={false}
-      extra={<CloseOutlined />}
+      extra={<CloseOutlined style={{ cursor: 'pointer' }} onClick={closeFeedbackForm} />}
       // getContainer={false}
     >
-      {/* < title="Rate Your Experience" open={isModalOpen} onCancel={closeFeedbackForm} footer={null}> */}
       <div className="feedback-form-container">
         {rating ? (
           <p className="thanks-para">Thank you for your feedback!</p>

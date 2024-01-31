@@ -37,7 +37,7 @@ const Chatbot: React.FC = () => {
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
 
-  useEffect(() => {
+  const initializeChatbot = () => {
     setIsLoading(true);
     const pingServer = async () => {
       try {
@@ -86,6 +86,10 @@ const Chatbot: React.FC = () => {
     };
     // Call ping endpoint on initialization
     pingServer();
+  };
+
+  useEffect(() => {
+    initializeChatbot();
   }, []); // Run once on component mount
 
   useEffect(() => {
@@ -282,7 +286,7 @@ const Chatbot: React.FC = () => {
       removeActivityEventListeners();
       // window.removeEventListener('blur', handleInactivity);
     };
-  }, [idleTimeoutSeconds]);
+  }, [idleTimeoutSeconds, sessionToken]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
@@ -306,6 +310,12 @@ const Chatbot: React.FC = () => {
     }
   }
 
+  const resetChat = () => {
+    console.log('resetChat');
+    setMessages([]);
+    initializeChatbot();
+  };
+
   return (
     <div className="chatbot-container">
       {isAPIAlive && !isLoading ? (
@@ -328,7 +338,7 @@ const Chatbot: React.FC = () => {
               Send
             </button>
           </div>
-          <FeedbackForm isModalOpen={isModalVisible} setIsModalOpen={setIsModalVisible} />
+          <FeedbackForm isModalOpen={isModalVisible} setIsModalOpen={setIsModalVisible} resetChat={resetChat} />
         </>
       ) : isLoading ? (
         <div className="chatbot-status-container">
