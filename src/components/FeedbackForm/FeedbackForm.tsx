@@ -58,7 +58,7 @@ const FeedbackForm: React.FC<FeedbackFormProps> = ({ isModalOpen, setIsModalOpen
           <p className="thanks-para">Thank you for your feedback!</p>
         ) : (
           <Form>
-            <Rate defaultValue={0} style={{ fontSize: 64 }} tooltips={desc} onChange={(value) => handleSaveRating(value)} />
+            <Rate defaultValue={0} className="star-rating" tooltips={desc} onChange={(value) => handleSaveRating(value)} />
           </Form>
         )}
       </div>

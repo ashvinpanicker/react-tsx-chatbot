@@ -10,6 +10,10 @@
 
 .thanks-para {
   margin-top: 20px;
-  font-size: 24px;
+  font-size: 20px;
   color: #1890ff;
+}
+
+.star-rating {
+  font-size: 44px;
 }
