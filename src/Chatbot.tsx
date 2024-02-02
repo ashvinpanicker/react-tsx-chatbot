@@ -394,7 +394,7 @@ const Chatbot: React.FC = () => {
               </div>
             ))}
             <div className="chatbot-suggestions">
-              {messages.length <= 2 &&
+              {messages.length === 1 &&
                 botIntroSuggestions.map((msg, index) => (
                   <button key={`suggestion_${index + 1}`} className="user-message question-suggestion" onClick={() => handleSendMessage(msg)}>
                     {msg}

@@ -223,15 +223,18 @@ video {
 }
 
 .question-suggestion {
-  cursor: pointer;
-  background-color: lightyellow;
-  color: #3498db;
-  border-style: dotted;
+  background-color: #ffffe0;
   border-color: #ada88f;
+  border-style: dashed;
+  color: #1b73ae;
+  border-width: 1px;
+  cursor: pointer;
   font-size: 14px;
 }
 
 .question-suggestion:hover {
   background-color: #3498db;
   color: white;
+  border-color: #3498db;
+  border-style: solid;
 }
