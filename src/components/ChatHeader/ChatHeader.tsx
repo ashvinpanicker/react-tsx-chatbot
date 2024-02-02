@@ -26,7 +26,11 @@ const ChatHeader: React.FC = () => {
   return (
     <div className="chatbot-header">
       <div className="header-content">
-        <span className="header-title">Chatbot</span>
+        <span className="header-title">
+          <span className="header-online-circle"></span>
+          Arihant AI Chat
+        </span>
+
         <div className="header-buttons">
           <Button
             type="default"

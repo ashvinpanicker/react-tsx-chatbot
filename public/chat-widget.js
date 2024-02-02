@@ -41,8 +41,9 @@
       left: auto;
       right: 5px;
       top: auto;
-      bottom: -20px;
-      border: 20px solid;
+      bottom: -17px;
+      border: 17px solid;
+      border-left: 5px solid;
       border-color: white transparent transparent transparent;
       transform: rotate(45deg);
     }
@@ -127,7 +128,7 @@
   chatWindow.style.background = 'white';
   chatWindow.style.boxShadow = 'rgba(0, 0, 0, 0.16) -5px 5px 5px';
   chatWindow.style.transition = 'transform 300ms cubic-bezier(0, 1.2, 1, 1) 0s, opacity 12ms ease-out 0s';
-  chatWindow.style.border = '1px solid #f0f0f0';
+  // chatWindow.style.border = '1px solid #f0f0f0';
   chatWindow.style.borderRadius = '5px';
   chatWindow.style.overflow = 'hidden';
   chatWindow.style.zIndex = '99999999';
