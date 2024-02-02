@@ -216,3 +216,24 @@ video {
 .site-visit-button:hover {
   background-color: #0056b3; /* Darker blue color on hover */
 }
+
+.chatbot-suggestions {
+  display: flex;
+  flex-direction: column;
+}
+
+.question-suggestion {
+  cursor: pointer;
+  background-color: lightyellow;
+  color: #3498db;
+  border-style: dotted;
+  border-color: #ada88f;
+  font-size: 14px;
+}
+
+.question-suggestion:hover {
+  background-color: #3498db;
+  color: white;
+}
+
+

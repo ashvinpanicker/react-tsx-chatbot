@@ -12,6 +12,7 @@ interface ChatMessage {
   isUser: boolean;
   isTyping?: boolean;
   className?: string;
+  timestamp?: Date;
 }
 
 interface ButtonAction {
@@ -37,6 +38,12 @@ const Chatbot: React.FC = () => {
   const [idleTimeoutSeconds, setIdleTimeoutSeconds] = useState<number>(0);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [botIntroMessage, setBotIntroMessage] = useState<string>('Welcome! How can I assist you today?');
+  const [botIntroSuggestions, setBotIntroSuggestions] = useState<Array<string>>([
+    'What properties are available for sale?',
+    'I am looking for a new home for a family of 4',
+    'Show me properties in Chennai',
+  ]);
 
   const initializeChatbot = () => {
     setIsLoading(true);
@@ -78,6 +85,12 @@ const Chatbot: React.FC = () => {
           // Store the userId
           setUserId(data.user_id);
           setIdleTimeoutSeconds(data.idle_timeout_seconds);
+          if (data.bot_intro_message) {
+            setBotIntroMessage(data.bot_intro_message);
+          }
+          if (data.bot_intro_suggestions) {
+            setBotIntroSuggestions(data.bot_intro_suggestions);
+          }
 
           // Schedule token refresh before it expires
           const refreshTimeout = setTimeout(refreshToken, (data.session_timeout_seconds - 60) * 1000);
@@ -137,8 +150,9 @@ const Chatbot: React.FC = () => {
     if (messages.length === 0) {
       addMessage({
         id: 1,
-        text: 'Welcome! How can I assist you today?',
+        text: botIntroMessage,
         isUser: false,
+        timestamp: new Date(),
       });
     }
   }, [messages]);
@@ -161,13 +175,14 @@ const Chatbot: React.FC = () => {
     setInputText(e.target.value);
   };
 
-  const handleSendMessage = async () => {
-    if (inputText.trim() === '' || !userId) return;
-    const question = inputText;
+  const handleSendMessage = async (suggestion?: string) => {
+    let question = inputText;
+    if (suggestion) question = suggestion;
+    if (!question && (inputText.trim() === '' || !userId)) return;
     setInputText('');
 
     // Display user message
-    const userMessage: ChatMessage = { id: messages.length + 1, text: question, isUser: true };
+    const userMessage: ChatMessage = { id: messages.length + 1, text: question, isUser: true, timestamp: new Date() };
     addMessage(userMessage);
 
     // Display typing animation
@@ -178,7 +193,9 @@ const Chatbot: React.FC = () => {
 
     // Remove the typing status widget message and replace it with the response message
     setMessages((prevMessages) => {
-      const updatedMessages = prevMessages.map((msg) => (msg.id === typingMessage.id ? { id: msg.id, text: responseText, isUser: false } : msg));
+      const updatedMessages = prevMessages.map((msg) =>
+        msg.id === typingMessage.id ? { id: msg.id, text: responseText, isUser: false, timestamp: new Date() } : msg,
+      );
 
       return updatedMessages;
     });
@@ -192,6 +209,7 @@ const Chatbot: React.FC = () => {
       text: `Experience the magic on our site at ${interestedProperty} - your gateway to a world of possibilities awaits. Come and explore for yourself!`,
       isUser: false,
       className: 'site-visit-button',
+      timestamp: new Date(),
       action: {
         type: 'openLink',
         link: `https://calendly.com/arihanthomes/site-visit?a2=${a2}`,
@@ -285,6 +303,7 @@ const Chatbot: React.FC = () => {
         id: messages.length + 1,
         text: 'You were timed out due to inactivity.',
         isUser: false,
+        timestamp: new Date(),
       };
       addMessage(timeoutMessage);
       setUserId(null);
@@ -335,10 +354,12 @@ const Chatbot: React.FC = () => {
     }
   };
 
+  const getTime = (timeStamp: Date | undefined) => timeStamp?.toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+
   function renderMessage(message: ButtonChatMessage): React.ReactNode {
     if (message.action && message.action.type === 'openLink') {
       return (
-        <div className={`site-visit-message`} key={message.id}>
+        <div className={`site-visit-message`} key={message.id} title={message.timestamp ? getTime(message.timestamp) : ''}>
           {message.text}
           <button className={message.className} onClick={() => handleButtonClick(message.action!)}>
             {message.action.text}
@@ -367,14 +388,23 @@ const Chatbot: React.FC = () => {
                 key={`${message.id}_${index}`}
                 className={`${message.isUser ? 'user-message' : 'bot-message'}`}
                 style={{ animationDelay: message.isTyping ? '0s' : '0.5s' }}
+                title={message.timestamp ? getTime(message.timestamp) : ''}
               >
                 {message.isTyping ? <TypingChatMessage /> : renderMessage(message)}
               </div>
             ))}
+            <div className="chatbot-suggestions">
+              {messages.length <= 2 &&
+                botIntroSuggestions.map((msg, index) => (
+                  <button key={`suggestion_${index + 1}`} className="user-message question-suggestion" onClick={() => handleSendMessage(msg)}>
+                    {msg}
+                  </button>
+                ))}
+            </div>
           </div>
           <div className="chatbot-input">
             <input type="text" value={inputText} onChange={handleUserInput} onKeyDown={handleKeyDown} placeholder="Type your message..." autoFocus />
-            <button disabled={!userId} style={userId ? {} : { cursor: 'not-allowed', background: 'gray' }} onClick={handleSendMessage}>
+            <button disabled={!userId} style={userId ? {} : { cursor: 'not-allowed', background: 'gray' }} onClick={() => handleSendMessage()}>
               Send
             </button>
           </div>
