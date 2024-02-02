@@ -32,7 +32,8 @@ const Chatbot: React.FC = () => {
   const [inputText, setInputText] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isAPIAlive, setIsAPIAlive] = useState<boolean>(false);
-  const [sessionToken, setSessionToken] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
+  // const [sessionTimeoutSeconds, setSessionTimeoutSeconds] = useState<number>(0);
   const [idleTimeoutSeconds, setIdleTimeoutSeconds] = useState<number>(0);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -63,22 +64,61 @@ const Chatbot: React.FC = () => {
       try {
         const response = await fetch(`${credentials.serverURL}/login`, {
           method: 'POST',
+          credentials: 'include',
           headers: new Headers({
-            // Authorization: 'Basic ' + btoa(`${credentials.username}:${credentials.password}`),
-            apikey: credentials.apiKey,
             'Content-Type': 'application/json',
+            // 'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`),
+            Authorization: `Bearer ${credentials.apiKey}`,
           }),
         });
 
         if (response.ok) {
           const { data } = await response.json();
           // console.log(data);
-          // Store the session token
-          setSessionToken(data.session_token);
+          // Store the userId
+          setUserId(data.user_id);
           setIdleTimeoutSeconds(data.idle_timeout_seconds);
+
+          // Schedule token refresh before it expires
+          const refreshTimeout = setTimeout(refreshToken, (data.session_timeout_seconds - 60) * 1000);
+
           setIsLoading(false);
+
+          // Cleanup the timeout on component unmount
+          return () => clearTimeout(refreshTimeout);
         } else {
           console.error('Login failed');
+          setIsLoading(false);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        setIsLoading(false);
+      }
+    };
+
+    const refreshToken = async () => {
+      try {
+        // Make a request to refresh the token
+        const refreshResponse = await fetch(`${credentials.serverURL}/refresh`, {
+          method: 'POST',
+          credentials: 'include',
+          headers: new Headers({
+            Authorization: `Bearer ${credentials.apiKey}`,
+            'Content-Type': 'application/json',
+          }),
+        });
+
+        if (refreshResponse.ok) {
+          const { data } = await refreshResponse.json();
+          setUserId(data.user_id);
+
+          // Schedule the next refresh before the new token expires
+          const refreshTimeout = setTimeout(refreshToken, (data.session_timeout_seconds - 60) * 1000);
+
+          // Cleanup the previous timeout on every refresh
+          clearTimeout(refreshTimeout);
+        } else {
+          console.error('Token refresh failed');
         }
       } catch (error) {
         console.error('Error:', error);
@@ -122,7 +162,7 @@ const Chatbot: React.FC = () => {
   };
 
   const handleSendMessage = async () => {
-    if (inputText.trim() === '' || !sessionToken) return;
+    if (inputText.trim() === '' || !userId) return;
     const question = inputText;
     setInputText('');
 
@@ -172,10 +212,10 @@ const Chatbot: React.FC = () => {
     try {
       const response = await fetch(`${credentials.serverURL}/ask`, {
         method: 'POST',
+        credentials: 'include',
         headers: {
+          Authorization: `Bearer ${credentials.apiKey}`,
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${sessionToken}`,
-          Apikey: credentials.apiKey,
         },
         body: JSON.stringify({ question }),
       });
@@ -210,9 +250,9 @@ const Chatbot: React.FC = () => {
     try {
       const response = await fetch(`${credentials.serverURL}/logout`, {
         method: 'POST',
+        credentials: 'include',
         headers: new Headers({
-          Authorization: 'Basic ' + btoa(`${credentials.username}:${credentials.password}`),
-          apikey: credentials.apiKey,
+          Authorization: `Bearer ${credentials.apiKey}`,
           'Content-Type': 'application/json',
         }),
       });
@@ -232,11 +272,11 @@ const Chatbot: React.FC = () => {
   };
 
   useEffect(() => {
-    let timeoutId: number | undefined;
+    let timeoutIdle: number | undefined;
 
-    const resetTimeout = () => {
-      clearTimeout(timeoutId);
-      if (idleTimeoutSeconds > 0) timeoutId = window.setTimeout(logout, idleTimeoutSeconds * 1000);
+    const resetIdleTimeout = () => {
+      clearTimeout(timeoutIdle);
+      if (idleTimeoutSeconds > 0) timeoutIdle = window.setTimeout(logout, idleTimeoutSeconds * 1000);
     };
 
     const logout = () => {
@@ -247,7 +287,7 @@ const Chatbot: React.FC = () => {
         isUser: false,
       };
       addMessage(timeoutMessage);
-      setSessionToken(null);
+      setUserId(null);
       removeActivityEventListeners();
       setIsModalVisible(true);
       logoutEndpoint(); // Close session on idle timeout
@@ -256,7 +296,7 @@ const Chatbot: React.FC = () => {
     };
 
     const handleActivity = () => {
-      resetTimeout();
+      resetIdleTimeout();
     };
 
     // const handleInactivity = () => {
@@ -270,7 +310,7 @@ const Chatbot: React.FC = () => {
     };
 
     // Set up initial timeout
-    resetTimeout();
+    resetIdleTimeout();
 
     // Add event listeners for user activity
     window.addEventListener('mousemove', handleActivity);
@@ -282,11 +322,11 @@ const Chatbot: React.FC = () => {
 
     // Clean up event listeners on component unmount
     return () => {
-      clearTimeout(timeoutId);
+      clearTimeout(timeoutIdle);
       removeActivityEventListeners();
       // window.removeEventListener('blur', handleInactivity);
     };
-  }, [idleTimeoutSeconds, sessionToken]);
+  }, [idleTimeoutSeconds, userId]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
@@ -334,7 +374,7 @@ const Chatbot: React.FC = () => {
           </div>
           <div className="chatbot-input">
             <input type="text" value={inputText} onChange={handleUserInput} onKeyDown={handleKeyDown} placeholder="Type your message..." autoFocus />
-            <button disabled={!sessionToken} style={sessionToken ? {} : { cursor: 'not-allowed', background: 'gray' }} onClick={handleSendMessage}>
+            <button disabled={!userId} style={userId ? {} : { cursor: 'not-allowed', background: 'gray' }} onClick={handleSendMessage}>
               Send
             </button>
           </div>
