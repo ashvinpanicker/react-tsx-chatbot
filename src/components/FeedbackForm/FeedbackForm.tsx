@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Rate, Form, Drawer } from 'antd';
 import { CloseOutlined } from '@ant-design/icons';
 import './FeedbackForm.css';
+import { updateUserData } from '../../utils/api';
 
 // Modal state handled in parent
 interface FeedbackFormProps {
@@ -14,9 +15,10 @@ const FeedbackForm: React.FC<FeedbackFormProps> = ({ isModalOpen, setIsModalOpen
   const [rating, setRating] = useState(0);
 
   const desc = ['Terrible', 'Bad', 'Average', 'Good', 'Wonderful'];
-  const handleSaveRating = (value: number) => {
+  const handleSaveRating = async (value: number) => {
     if (value > 0) {
-      // TODO: send rating to API
+      // Send rating to API
+      await updateUserData({ rating: value });
       console.log(`You rated: ${value} stars`);
       setRating(value);
     } else {

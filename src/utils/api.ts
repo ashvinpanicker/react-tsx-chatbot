@@ -76,7 +76,7 @@ export const loginEndpoint = async (): Promise<LoginResponse | null> => {
   }
 };
 
-export interface RefreshTokenResponse {
+interface RefreshTokenResponse {
   userId: string;
 }
 
@@ -176,5 +176,43 @@ export const logoutEndpoint = async () => {
   } catch (error) {
     console.error('Error:', error);
     return `Error while logging out: ${error}`;
+  }
+};
+
+interface updateUserRequestObject {
+  chat_user_id?: string;
+  customer_id?: number;
+  name?: string;
+  email?: string;
+  mobile?: string;
+  rating?: number;
+  feedback?: string;
+}
+
+/**
+ * Logout the user from the server.
+ * @returns {Promise<string>} A message indicating the success or failure of the logout operation.
+ */
+export const updateUserData = async (data: updateUserRequestObject) => {
+  try {
+    const response = await fetch(`${credentials.serverURL}/chat_user`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: new Headers({
+        Authorization: `Bearer ${credentials.apiKey}`,
+        'Content-Type': 'application/json',
+      }),
+      body: JSON.stringify(data),
+    });
+
+    if (response.ok) {
+      const jsonResponse = await response.json();
+      return jsonResponse.message;
+    } else {
+      console.error('Failed to Update User Data');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    return `Error while attempting to updateUserData: ${error}`;
   }
 };

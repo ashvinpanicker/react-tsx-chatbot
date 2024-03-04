@@ -124,7 +124,7 @@ const Chatbot: React.FC = () => {
         if (refreshResponse.ok) {
           const { data } = await refreshResponse.json();
           setUserId(data.user_id);
-
+          setIdleTimeoutSeconds(data.idle_timeout_seconds);
           // Schedule the next refresh before the new token expires
           const refreshTimeout = setTimeout(refreshToken, (data.session_timeout_seconds - 60) * 1000);
 
