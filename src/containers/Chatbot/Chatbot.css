@@ -1,0 +1,240 @@
+/* CSS Reset */
+
+body,
+div,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+address,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+samp,
+small,
+strong,
+sub,
+sup,
+var,
+b,
+i,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section,
+summary,
+time,
+mark,
+audio,
+video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  vertical-align: baseline;
+}
+
+/* Chatbot Styles */
+
+/* Add or modify these styles in your existing CSS or create a new CSS file */
+
+.chatbot-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* Set height to 100% of the viewport height */
+}
+
+.chatbot-status-container {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  background: #dedede;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.chatbot-status-message {
+  width: 90%;
+  font-size: 16px;
+  color: #444;
+  padding-bottom: 20px;
+}
+
+.chatbot-header {
+  background-color: #3498db;
+  color: #fff;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+}
+
+.header-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+.close-button {
+  background-color: transparent;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.chatbot-messages {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  overflow-y: auto;
+  max-height: 100%;
+}
+
+.bot-message {
+  background-color: #ecf0f1;
+  color: #2c3e50;
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 10px;
+  max-width: 70%;
+  align-self: flex-start;
+  text-align: left;
+}
+
+.user-message {
+  background-color: #3498db;
+  color: #fff;
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 10px;
+  max-width: 70%;
+  align-self: flex-end;
+  text-align: left;
+}
+
+.chatbot-input {
+  display: flex;
+  align-items: flex-end;
+  padding: 10px;
+  background-color: #ecf0f1;
+}
+
+.chatbot-input input {
+  flex: 1;
+  margin-right: 10px;
+  padding: 8px;
+  border: none;
+  border-radius: 5px;
+  outline: none;
+  text-align: left;
+}
+
+.chatbot-input button {
+  background-color: #3498db;
+  color: #fff;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  outline: none;
+}
+
+/* Add a white-space rule to ensure long messages wrap correctly */
+.user-message,
+.bot-message {
+  white-space: pre-wrap;
+}
+
+.site-visit-message {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* Align text to the left */
+}
+
+.site-visit-button {
+  width: 100%;
+  margin-top: 10px;
+  padding: 8px 16px;
+  background-color: #007bff; /* Blue color for the button */
+  color: #fff; /* Text color for the button */
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.site-visit-button:hover {
+  background-color: #0056b3; /* Darker blue color on hover */
+}
+
+.chatbot-suggestions {
+  display: flex;
+  flex-direction: column;
+}
+
+.question-suggestion {
+  background-color: #ffffe0;
+  border-color: #ada88f;
+  border-style: dashed;
+  color: #1b73ae;
+  border-width: 1px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.question-suggestion:hover {
+  background-color: #3498db;
+  color: white;
+  border-color: #3498db;
+  border-style: solid;
+}
