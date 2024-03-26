@@ -38,11 +38,11 @@ const Chatbot: React.FC = () => {
   const [idleTimeoutSeconds, setIdleTimeoutSeconds] = useState<number>(0);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [botIntroMessage, setBotIntroMessage] = useState<string>('Welcome! How can I assist you today?');
+  const [botIntroMessage, setBotIntroMessage] = useState<string>('Welcome to Enfold India! How can I assist you today?');
   const [botIntroSuggestions, setBotIntroSuggestions] = useState<Array<string>>([
-    'What properties are available for sale?',
-    'I am looking for a new home for a family of 4',
-    'Show me properties in Chennai',
+    'What does Enfold India do?',
+    'I want to learn about my sexuality',
+    'How can I contribute to your mission?',
   ]);
 
   const initializeChatbot = () => {

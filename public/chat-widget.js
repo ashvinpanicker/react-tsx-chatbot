@@ -1,5 +1,5 @@
 (function () {
-  const iframeURL = 'https://test-hgqq.onrender.com';
+  const iframeURL = 'https://react-tsx-chatbot-2.onrender.com';
 
   const styleElement = document.createElement('style');
   styleElement.textContent = `

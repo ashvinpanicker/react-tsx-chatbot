@@ -28,7 +28,7 @@ const ChatHeader: React.FC = () => {
       <div className="header-content">
         <span className="header-title">
           <span className="header-online-circle"></span>
-          Arihant AI Chat
+          Enfold AI Chat
         </span>
 
         <div className="header-buttons">
