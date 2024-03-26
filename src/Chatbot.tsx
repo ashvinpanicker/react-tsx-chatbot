@@ -260,7 +260,7 @@ const Chatbot: React.FC = () => {
             console.log('User is interested in -> ', interestedTags);
             promptSiteVisit(interestedTags[0].content);
           }
-          return jsonResponse.data.answer_without_tags;
+          return jsonResponse.data.answer_without_tags || jsonResponse.message;
         } else {
           console.error('Ask endpoint failed', jsonResponse);
           return jsonResponse.message;
