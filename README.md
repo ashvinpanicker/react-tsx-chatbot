@@ -3,7 +3,7 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 This is a frontend chatbot application that's meant to be connected with a backend API. For more information visit https://sell247.ai
 
-## Prerequisite 
+## Prerequisite
 
 NodeJS & npm/yarn, Git
 
@@ -26,7 +26,6 @@ REACT_APP_HOSTED_LOCATION = '<link-where-deployed>'
 3. `yarn start` or `npm run start`
 4. Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-
 ## Deployment
 
 Since this a static site, I host it on https://render.com for free
@@ -43,7 +42,5 @@ The build is minified and the filenames include the hashes.\
 Your app is ready to be deployed!
 
 See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-
 
 To learn React, check out the [React documentation](https://reactjs.org/).

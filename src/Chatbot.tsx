@@ -85,11 +85,20 @@ const Chatbot: React.FC = () => {
           // Store the userId
           setUserId(data.user_id);
           setIdleTimeoutSeconds(data.idle_timeout_seconds);
-          if (data.bot_intro_message) {
-            setBotIntroMessage(data.bot_intro_message);
+          if (data.welcome_message) {
+            setBotIntroMessage(data.welcome_message);
           }
-          if (data.bot_intro_suggestions) {
-            setBotIntroSuggestions(data.bot_intro_suggestions);
+          if (data.sample_intros) {
+            const questionsList = data.sample_intros.intros;
+            // Select 3 suggested questions randomly from the list
+            if (questionsList >= 3) {
+              const selectedQuestionSuggestions = questionsList
+                .slice() // Create a shallow copy of the array
+                .sort(() => Math.random() - 0.5) // Shuffle the array randomly
+                .slice(0, 3); // Select the first 3 elements
+              console.log('selectedQuestionSuggestions: ', selectedQuestionSuggestions);
+              setBotIntroSuggestions(selectedQuestionSuggestions);
+            }
           }
 
           // Schedule token refresh before it expires
@@ -394,12 +403,15 @@ const Chatbot: React.FC = () => {
               </div>
             ))}
             <div className="chatbot-suggestions">
-              {messages.length === 1 &&
-                botIntroSuggestions.map((msg, index) => (
-                  <button key={`suggestion_${index + 1}`} className="user-message question-suggestion" onClick={() => handleSendMessage(msg)}>
-                    {msg}
-                  </button>
-                ))}
+              {
+                // After the intro message display 3 suggested questions
+                messages.length === 1 &&
+                  botIntroSuggestions.map((msg, index) => (
+                    <button key={`suggestion_${index + 1}`} className="user-message question-suggestion" onClick={() => handleSendMessage(msg)}>
+                      {msg}
+                    </button>
+                  ))
+              }
             </div>
           </div>
           <div className="chatbot-input">
