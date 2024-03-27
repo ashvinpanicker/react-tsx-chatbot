@@ -40,9 +40,9 @@ const Chatbot: React.FC = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [botIntroMessage, setBotIntroMessage] = useState<string>('Welcome to Enfold India! How can I assist you today?');
   const [botIntroSuggestions, setBotIntroSuggestions] = useState<Array<string>>([
-    'What does Enfold India do?',
-    'I want to learn about my sexuality',
-    'How can I contribute to your mission?',
+    'When can a girl become pregnant?',
+    'How long does pregnancy last?',
+    'What is an abortion?',
   ]);
 
   const initializeChatbot = () => {
