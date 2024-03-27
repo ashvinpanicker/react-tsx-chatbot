@@ -87,8 +87,10 @@ const Chatbot: React.FC = () => {
           setIdleTimeoutSeconds(data.idle_timeout_seconds);
           if (data.welcome_message) {
             setBotIntroMessage(data.welcome_message);
+            localStorage.setItem('defaultWelcomeMsg', JSON.stringify(data.welcome_message));
           }
           if (data.sample_intros) {
+            alert('found');
             const questionsList = data.sample_intros.intros;
             // Select 3 suggested questions randomly from the list
             if (questionsList >= 3) {
@@ -98,6 +100,7 @@ const Chatbot: React.FC = () => {
                 .slice(0, 3); // Select the first 3 elements
               console.log('selectedQuestionSuggestions: ', selectedQuestionSuggestions);
               setBotIntroSuggestions(selectedQuestionSuggestions);
+              localStorage.setItem('defaultQuestionSuggestions', JSON.stringify(botIntroSuggestions));
             }
           }
 
@@ -152,6 +155,15 @@ const Chatbot: React.FC = () => {
 
   useEffect(() => {
     initializeChatbot();
+    // Retrieve data from local storage
+    const defaultWelcomeMsg = localStorage.getItem('defaultWelcomeMsg');
+    const defaultQuestionSuggestions = localStorage.getItem('defaultQuestionSuggestions');
+    if (defaultWelcomeMsg) {
+      setBotIntroMessage(JSON.parse(defaultWelcomeMsg));
+    }
+    if (defaultQuestionSuggestions) {
+      setBotIntroSuggestions(JSON.parse(defaultQuestionSuggestions));
+    }
   }, []); // Run once on component mount
 
   useEffect(() => {
