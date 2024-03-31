@@ -1,5 +1,5 @@
 (function () {
-  const iframeURL = REACT_APP_HOSTED_LOCATION;
+  const iframeURL = document.querySelector('[property="chatbot-hosted-url"]').content;
   console.log(iframeURL);
   const styleElement = document.createElement('style');
   styleElement.textContent = `
