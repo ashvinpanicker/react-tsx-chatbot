@@ -1,6 +1,6 @@
 (function () {
-  const iframeURL = document.querySelector('[property="chatbot-hosted-url"]').content;
-  console.log(iframeURL);
+  const iframeURL = 'https://test-hgqq.onrender.com';
+
   const styleElement = document.createElement('style');
   styleElement.textContent = `
     #floating-button-247 {
