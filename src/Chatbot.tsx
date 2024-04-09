@@ -81,7 +81,6 @@ const Chatbot: React.FC = () => {
 
         if (response.ok) {
           const { data } = await response.json();
-          // console.log(data);
           // Store the userId
           setUserId(data.user_id);
           setIdleTimeoutSeconds(data.idle_timeout_seconds);
@@ -91,7 +90,7 @@ const Chatbot: React.FC = () => {
           if (data.sample_intros) {
             const questionsList = data.sample_intros.intros;
             // Select 3 suggested questions randomly from the list
-            if (questionsList >= 3) {
+            if (questionsList.length >= 3) {
               const selectedQuestionSuggestions = questionsList
                 .slice() // Create a shallow copy of the array
                 .sort(() => Math.random() - 0.5) // Shuffle the array randomly
@@ -155,8 +154,8 @@ const Chatbot: React.FC = () => {
   }, []); // Run once on component mount
 
   useEffect(() => {
-    // Display introductory message only if there are no existing messages
-    if (messages.length === 0) {
+    // Display introductory message only if there are no existing messages and userId was loaded
+    if (messages.length === 0 && userId) {
       addMessage({
         id: 1,
         text: botIntroMessage,
@@ -164,7 +163,7 @@ const Chatbot: React.FC = () => {
         timestamp: new Date(),
       });
     }
-  }, [messages]);
+  }, [messages, botIntroMessage]);
 
   useLayoutEffect(() => {
     scrollToBottom();
@@ -286,7 +285,6 @@ const Chatbot: React.FC = () => {
 
       if (response.ok) {
         const jsonResponse = await response.json();
-        // console.log(data);
         // Store the session token
         return jsonResponse.message;
       } else {
